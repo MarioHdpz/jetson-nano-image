@@ -130,7 +130,7 @@
 - name: Add an apt signing key for Docker
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
-    file: /usr/share/keyrings/docker-archive-keyring.gpg
+    keyring: /usr/share/keyrings/docker-archive-keyring.gpg
     state: present
 
 - name: Add apt repository for stable version
