@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [test-ci]
+    branches: [test-docker]
   pull_request:
 
 jobs:

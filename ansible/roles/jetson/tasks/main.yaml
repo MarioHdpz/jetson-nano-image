@@ -12,37 +12,6 @@
     upgrade: dist
     update_cache: yes
 
-- name: Install Nvidia required packages
-  apt:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - libgles2
-    - libpangoft2-1.0-0
-    - libxkbcommon0
-    - libwayland-egl1
-    - libwayland-cursor0
-    - libunwind8
-    - libasound2
-    - libpixman-1-0
-    - libjpeg-turbo8
-    - libinput10
-    - libcairo2
-    - device-tree-compiler
-    - iso-codes
-    - libffi6
-    - libncursesw5
-    - libdrm-common
-    - libdrm2
-    - libegl-mesa0
-    - libegl1
-    - libegl1-mesa
-    - libgtk-3-0
-    - python2
-    - python-is-python2
-    - libgstreamer1.0-0
-    - libgstreamer-plugins-bad1.0-0
-
 - name: Install core packages
   apt:
     name: "{{ item }}"
@@ -104,16 +73,6 @@
     groups: sudo
     state: present
 
-- name: Download pip
-  get_url:
-    url: https://bootstrap.pypa.io/get-pip.py
-    dest: /tmp/get-pip.py
-
-- name: Install pip
-  shell: python3 /tmp/get-pip.py --user
-  become: yes
-  become_user: "{{ new_user.name }}"
-
 - name: Install docker dependencies
   apt:
     name: "{{ packages }}"
@@ -130,12 +89,12 @@
 - name: Add an apt signing key for Docker
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
-    keyring: /etc/apt/trusted.gpg.d/docker-archive-keyring.gpg
+    keyring: /etc/apt/trusted.gpg.d/docker.gpg
     state: present
 
 - name: Add apt repository for stable version
   apt_repository:
-    repo: deb [arch=arm64 signed-by=/etc/apt/trusted.gpg.d/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu focal stable
+    repo: deb [arch=arm64 signed-by=/etc/apt/trusted.gpg.d/docker.gpg] https://download.docker.com/linux/ubuntu focal stable
     state: present
 
 - name: Install Docker
