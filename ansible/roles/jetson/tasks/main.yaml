@@ -72,6 +72,7 @@
     - usbutils
     - neovim
     - wpasupplicant
+    - network-manager
 
 - name: Generate locales
   locale_gen:
@@ -113,7 +114,6 @@
   become: yes
   become_user: "{{ new_user.name }}"
 
-
 - name: Install docker dependencies
   apt:
     name: "{{ packages }}"
@@ -130,12 +130,12 @@
 - name: Add an apt signing key for Docker
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
-    keyring: /usr/share/keyrings/docker-archive-keyring.gpg
+    keyring: /etc/apt/trusted.gpg.d/docker-archive-keyring.gpg
     state: present
 
 - name: Add apt repository for stable version
   apt_repository:
-    repo: deb [arch=arm64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu focal stable"
+    repo: deb [arch=arm64 signed-by=/etc/apt/trusted.gpg.d/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu focal stable
     state: present
 
 - name: Install Docker
@@ -149,22 +149,7 @@
     - docker-ce-cli 
     - containerd.io
 
-- name: Add user to docker group
+- name: Add new user to docker group
   user:
-    name: "{{ansible_user}}"
+    name: "{{ new_user.name }}"
     group: docker
-
-
-- name: Download docker-compose {{ docker_compose_version }}
-  get_url:
-    url : https://github.com/docker/compose-cli/releases/download/v2.0.0-beta.3/docker-compose-linux-arm64
-    dest: ~/docker-compose
-    mode: '+x'
-
-- name: Check docker-compose exists
-  stat: path=~/docker-compose
-  register: docker_compose
-
-- name: Move docker-compose to /usr/local/bin/docker-compose
-  command: mv ~/docker-compose /usr/local/bin/docker-compose
-  when: docker_compose.stat.exists
