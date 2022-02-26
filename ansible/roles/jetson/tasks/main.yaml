@@ -127,14 +127,15 @@
     - software-properties-common
     - gnupg-agent
 
-- name: Add apt repository for stable version
-  apt_repository:
-    repo: deb [arch=arm64] https://download.docker.com/linux/ubuntu focal stable
-    state: present
-
 - name: Add an apt signing key for Docker
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
+    file: /usr/share/keyrings/docker-archive-keyring.gpg
+    state: present
+
+- name: Add apt repository for stable version
+  apt_repository:
+    repo: deb [arch=arm64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu focal stable"
     state: present
 
 - name: Install Docker
