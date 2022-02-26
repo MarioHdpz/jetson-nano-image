@@ -112,3 +112,58 @@
   shell: python3 /tmp/get-pip.py --user
   become: yes
   become_user: "{{ new_user.name }}"
+
+
+- name: Install docker dependencies
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+    - gnupg-agent
+
+- name: Add apt repository for stable version
+  apt_repository:
+    repo: deb [arch=arm64] https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: Add an apt signing key for Docker
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Install Docker
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - docker-ce
+    - docker-ce-cli 
+    - containerd.io
+
+- name: Add user to docker group
+  user:
+    name: "{{ansible_user}}"
+    group: docker
+
+
+- name: Download docker-compose {{ docker_compose_version }}
+  get_url:
+    url : https://github.com/docker/compose-cli/releases/download/v2.0.0-beta.3/docker-compose-linux-arm64
+    dest: ~/docker-compose
+    mode: '+x'
+
+- name: Check docker-compose exists
+  stat: path=~/docker-compose
+  register: docker_compose
+
+- name: Move docker-compose to /usr/local/bin/docker-compose
+  command: mv ~/docker-compose /usr/local/bin/docker-compose
+  when: docker_compose.stat.exists
