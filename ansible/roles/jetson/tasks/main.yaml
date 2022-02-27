@@ -127,15 +127,17 @@
     - software-properties-common
     - gnupg-agent
 
-- name: Add an apt signing key for Docker
-  apt_key:
+- name: Download signing key for Docker
+  ansible.builtin.get_url:
     url: https://download.docker.com/linux/ubuntu/gpg
-    keyring: /etc/apt/trusted.gpg.d/docker-archive-keyring.gpg
-    state: present
+    dest: /tmp/docker.gpg
+
+- name: Disarmor gpg key for Docker
+  ansible.builtin.command: gpg --dearmor --no-options -o /etc/apt/trusted.gpg.d/docker.gpg /tmp/docker.gpg
 
 - name: Add apt repository for stable version
   apt_repository:
-    repo: deb [arch=arm64 signed-by=/etc/apt/trusted.gpg.d/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu focal stable
+    repo: deb [arch=arm64 signed-by=/etc/apt/trusted.gpg.d/docker.gpg] https://download.docker.com/linux/ubuntu focal stable
     state: present
 
 - name: Install Docker
