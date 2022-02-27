@@ -12,37 +12,6 @@
     upgrade: dist
     update_cache: yes
 
-- name: Install core packages
-  apt:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - bash-completion
-    - build-essential
-    - btrfs-progs
-    - cmake
-    - curl
-    - dnsutils
-    - htop
-    - iotop
-    - isc-dhcp-client
-    - iputils-ping
-    - kmod
-    - linux-firmware
-    - locales
-    - net-tools
-    - netplan.io
-    - pciutils
-    - python3-dev
-    - ssh
-    - sudo
-    - udev
-    - unzip
-    - usbutils
-    - neovim
-    - wpasupplicant
-    - network-manager
-
 - name: Generate locales
   locale_gen:
     name: en_US.UTF-8
@@ -86,10 +55,13 @@
     - software-properties-common
     - gnupg-agent
 
-- name: Add an apt signing key for Docker
+- name: Download signing key for Docker
   ansible.builtin.get_url:
     url: https://download.docker.com/linux/ubuntu/gpg
-    dest: /etc/apt/trusted.gpg.d/docker.gpg
+    dest: /tmp/docker.gpg
+
+- name: Disarmor gpg key for Docker
+  ansible.builtin.command: gpg --dearmor --no-options -o /etc/apt/trusted.gpg.d/docker.gpg /tmp/docker.gpg
 
 - name: Add apt repository for stable version
   apt_repository:
