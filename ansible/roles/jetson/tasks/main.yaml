@@ -12,27 +12,6 @@
     upgrade: dist
     update_cache: yes
 
-- name: Generate locales
-  locale_gen:
-    name: en_US.UTF-8
-    state: present
-
-- name: Enable services
-  systemd:
-    name: "{{ item }}"
-    enabled: yes
-  loop:
-    - ssh
-    - systemd-networkd
-
-- name: Update network conf
-  template:
-    src: etc/netplan/netcfg.yaml
-    dest: /etc/netplan/netcfg.yaml
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Create new user
   user:
     name: "{{ new_user.name }}"
